@@ -1,0 +1,39 @@
+{
+  "name": "geodash-widgets-editor",
+  "version": "1.0.0",
+  "description": "Geodash Widgets Editor ",
+  "main": "index.js",
+  "author": "Erick Otenyo",
+  "license": "MIT",
+  "scripts": {
+    "dev": "webpack --mode development --watch",
+    "build": "webpack --mode production"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "@babel/preset-react": "^7.23.3",
+    "babel-loader": "^9.1.3",
+    "css-loader": "^6.10.0",
+    "prop-types": "^15.8.1",
+    "sass": "^1.70.0",
+    "sass-loader": "^14.1.0",
+    "style-loader": "^3.3.4",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.90.1",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "@wmo-raf/layer-manager": "^1.0.0",
+    "antd": "^5.14.0",
+    "axios": "^1.6.7",
+    "lodash": "^4.17.21",
+    "maplibre-gl": "2.4.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-map-gl": "5.2.7",
+    "react-tippy": "^1.4.0",
+    "viewport-mercator-project": "^7.0.4",
+    "vizzuality-components": "^3.0.3"
+  }
+}

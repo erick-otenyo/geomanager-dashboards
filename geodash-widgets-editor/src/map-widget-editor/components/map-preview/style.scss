@@ -1,0 +1,32 @@
+.c-map-preview {
+  border: 1px solid rgb(240 241 242/1);
+
+  .map-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+
+    .map-title {
+      max-width: 80%;
+      color: #393f44;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      font-size: 16px;
+      font-weight: 700;
+    }
+  }
+
+  .map-container {
+    height: 500px;
+  }
+
+  .map-caption {
+    padding: 14px;
+    font-style: italic;
+    box-shadow: rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgb(240, 241, 242) 0px 1px 2px 0px;
+  }
+
+
+}
