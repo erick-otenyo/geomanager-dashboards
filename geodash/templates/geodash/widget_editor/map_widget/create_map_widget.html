@@ -9,16 +9,15 @@
     <div id="map-widget-editor-container" style="flex: 1;height: 100%"></div>
 
 
-    <form action="{{ action_url }}" method="POST" novalidate{% if form.is_multipart %}
+    <form id="widget-form" action="{{ action_url }}" method="POST" novalidate{% if form.is_multipart %}
           enctype="multipart/form-data"{% endif %} data-edit-form>
         {% csrf_token %}
-
         <div style="display: none">
             {{ panel.render_form_content }}
         </div>
 
         <footer class="footer">
-            <nav aria-label="{% trans 'Actions' %}">
+            <nav aria-label="{% trans 'Actions' %}" id="submit-actions">
                 <ul>
                     <li class="actions actions--primary footer__container">
                         <div class="dropdown dropup dropdown-button match-width">
@@ -61,6 +60,7 @@
 
     <script src="{% static 'geodash/js/widget-editor/map-widget-editor.js' %}"></script>
 
+
     <script>
         // Set wagtailConfig.ACTIVE_CONTENT_LOCALE if this is a translated page
         // This value may be used by JS widgets on the form
@@ -71,17 +71,41 @@
     </script>
     <script>
 
+        const datasetsListUrl = "{% url 'dataset-list' %}";
+
         const elementId = "map-widget-editor-container"
         $(document).ready(() => {
 
-            // hide minimap
-            $('[data-minimap-container]').hide()
+                // hide minimap
+                $('[data-minimap-container]').hide()
+
+                // disable submit buttons by default
+                const submitButtons = $('#submit-actions button')
+                submitButtons.prop('disabled', true)
 
 
-            const config = {}
+                const editorConfig = {
+                    saveWidget: (widgetData) => {
+                    },
+                    fetchDatasets: (queryParams) => {
+                        return fetch(datasetsListUrl).then(res => res.json()).then(data => data.filter(d => {
+                            return !d.isBoundary && d.layers && !!d.layers.length
+                        }))
+                    },
+                }
 
-            // initialize editor
-            WidgetEditor.initializeMapWidgetEditor(elementId, config)
-        })
+                const initialData = {
+                    title: "Sample Title",
+                    description: "Sample Description",
+                    dataset: "e8a57470-bdc5-43a6-8dd2-d63426436337",
+                    layer: "b37516f3-01ac-49f3-a5db-3b44b9491c51"
+                }
+
+                // initialize editor
+                WidgetEditor.initializeMapWidgetEditor(elementId, editorConfig, initialData)
+
+
+            }
+        )
     </script>
 {% endblock %}

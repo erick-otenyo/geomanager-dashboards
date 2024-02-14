@@ -27,12 +27,18 @@
     "@wmo-raf/layer-manager": "^1.0.0",
     "antd": "^5.14.0",
     "axios": "^1.6.7",
+    "classnames": "^2.5.1",
+    "date-fns": "^3.3.1",
     "lodash": "^4.17.21",
     "maplibre-gl": "2.4.0",
     "react": "^18.2.0",
+    "react-datepicker": "^6.1.0",
     "react-dom": "^18.2.0",
     "react-map-gl": "5.2.7",
+    "react-relative-portal": "^1.8.0",
     "react-tippy": "^1.4.0",
+    "shallow-equal": "^3.1.0",
+    "use-context-selector": "^1.4.1",
     "viewport-mercator-project": "^7.0.4",
     "vizzuality-components": "^3.0.3"
   }

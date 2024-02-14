@@ -1,9 +1,9 @@
 import {createRoot} from "react-dom/client";
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Layout} from 'antd';
 
 
-import Sidebar from './components/sidebar.js';
+import Editor from './components/editor';
 import MapPreview from "./components/map-preview";
 
 
@@ -11,6 +11,8 @@ import {
     MAPSTYLES,
     VIEWPORT
 } from './map-config';
+import {MapWidgetProvider} from "app/mapWidget";
+import {ConfigProvider} from "app/config";
 
 
 const {Content, Sider} = Layout;
@@ -26,7 +28,36 @@ const layers = [
         "isMultiLayer": false,
         "legendConfig": {
             "type": "choropleth",
-            "items": []
+            "items": [
+                {
+                    "name": 1.0,
+                    "color": "#c8c8c8"
+                },
+                {
+                    "name": 10.0,
+                    "color": "#f8a504"
+                },
+                {
+                    "name": 30.0,
+                    "color": "#fdff00"
+                },
+                {
+                    "name": 50.0,
+                    "color": "#caff70"
+                },
+                {
+                    "name": 100.0,
+                    "color": "#4cff00"
+                },
+                {
+                    "name": 200.0,
+                    "color": "#66cd00"
+                },
+                {
+                    "name": "",
+                    "color": "#116e00"
+                }
+            ]
         },
         "nestedLegend": false,
         "layerConfig": {
@@ -34,10 +65,27 @@ const layers = [
             "source": {
                 "type": "raster",
                 "tiles": [
-                    "http://127.0.0.1:8200/api/raster-tiles/b37516f3-01ac-49f3-a5db-3b44b9491c51/{z}/{x}/{y}?time=2023-07-11T06:00:00.000Z"
+                    "http://127.0.0.1:8200/api/raster-tiles/b37516f3-01ac-49f3-a5db-3b44b9491c51/{z}/{x}/{y}?time=2023-07-11T06:00:00.000Z&geostore_id={geostore_id}"
                 ]
             }
         },
+        "params": {
+            "time": "2023-07-11T06:00:00.000Z",
+            "geostore_id": ""
+        },
+        "paramsSelectorConfig": [
+            {
+                "key": "time",
+                "required": true,
+                "sentence": "{selector}",
+                "type": "datetime",
+                "availableDates": [],
+                "dateFormat": {
+                    "currentTime": "yyyy-MM-dd HH:mm"
+                }
+            }
+        ],
+        "currentTimeMethod": "latest_from_source",
         "autoUpdateInterval": null,
         "canClip": true,
         "analysisConfig": {},
@@ -80,39 +128,53 @@ const mapConfiguration = {
 }
 
 
-const MapWidgetEditor = () => {
+const MapWidgetEditor = (props) => {
+    const {
+        editorConfig,
+        initialEdits
+    } = props;
+
     return (
-        <Layout style={{height: '100%'}} hasSider>
-            <Sider
-                width={300}
-                style={{
-                    overflow: 'auto',
 
-                }}>
-                <Sidebar/>
-            </Sider>
-            <Layout>
-                <Content style={{margin: '24px 50px 70px 24px', backgroundColor: "#fff"}}>
+        <ConfigProvider config={editorConfig}>
+            <MapWidgetProvider initialEdits={initialEdits}>
+                <Layout style={{height: '100%'}} hasSider key="sidebar">
+                    <Sider
+                        width={300}
+                        style={{
+                            overflow: 'auto',
 
-                    <div style={{margin: 50}}>
-                        <MapPreview
-                            layers={layers}
-                            layerId="b37516f3-01ac-49f3-a5db-3b44b9491c51"
-                            map={{
-                                MAPSTYLES,
-                                VIEWPORT,
-                            }}
-                            mapConfiguration={mapConfiguration}
-                        />
-                    </div>
-                </Content>
-            </Layout>
-        </Layout>
+                        }}>
+                        <Editor/>
+                    </Sider>
+                    <Layout key="content">
+                        <Content style={{margin: '24px 50px 70px 24px', backgroundColor: "#fff"}}>
+                            <div style={{margin: 50}}>
+                                <MapPreview
+                                    layers={layers}
+                                    layerId="b37516f3-01ac-49f3-a5db-3b44b9491c51"
+                                    map={{
+                                        MAPSTYLES,
+                                        VIEWPORT,
+                                    }}
+                                    mapConfiguration={mapConfiguration}
+                                />
+                            </div>
+                        </Content>
+                    </Layout>
+                </Layout>
+            </MapWidgetProvider>
+        </ConfigProvider>
     );
 };
 
 
-export function initializeMapWidgetEditor(elementId, props) {
+export function initializeMapWidgetEditor(elementId, editorConfig, initialEdits = {}) {
+    const props = {
+        editorConfig,
+        initialEdits
+    }
+
     createRoot(document.getElementById(elementId)).render(
         <MapWidgetEditor {...props} />
     );
