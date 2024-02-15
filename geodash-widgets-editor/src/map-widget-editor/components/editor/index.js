@@ -4,8 +4,8 @@ import GeneralFields from "./general-fields";
 import BasemapFields from "./basemap-fields";
 import DatasetFields from "./dataset-fields";
 
-import {useMapWidget} from "app/mapWidget"
-import {useConfig} from "app/config"
+import {useMapWidget} from "providers/mapWidget"
+import {useConfig} from "providers/config"
 
 import "./style.scss";
 
@@ -13,15 +13,16 @@ const Sidebar = () => {
     const {
         initialLoaded,
         updateDatasets,
-        updateDatasetsLoading
+        updateDatasetsLoading,
+        widgetConfig,
     } = useMapWidget(
         ({
-             state: {initialLoaded},
+             state: {initialLoaded, widgetConfig},
              actions: {updateDatasets, updateDatasetsLoading},
-         }) => ({initialLoaded, updateDatasets, updateDatasetsLoading})
+         }) => ({initialLoaded, updateDatasets, updateDatasetsLoading, widgetConfig})
     );
 
-    const {fetchDatasets} = useConfig();
+    const {fetchDatasets, onWidgetUpdated} = useConfig();
 
     useEffect(() => {
         if (fetchDatasets) {
@@ -35,6 +36,14 @@ const Sidebar = () => {
             });
         }
     }, []);
+
+    useEffect(() => {
+
+        if (onWidgetUpdated) {
+            onWidgetUpdated(widgetConfig);
+        }
+
+    }, [widgetConfig]);
 
 
     const items = [
@@ -61,7 +70,7 @@ const Sidebar = () => {
 
     return (
         <div style={{width: "100%", paddingBottom: 50}}>
-            <Collapse bordered={false} expandIconPosition="end" items={items} defaultActiveKey={['general']}/>
+            <Collapse accordion bordered={false} expandIconPosition="end" items={items} defaultActiveKey={['general']}/>
         </div>
     );
 }

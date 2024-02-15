@@ -9,9 +9,14 @@
     <div id="map-widget-editor-container" style="flex: 1;height: 100%"></div>
 
 
+
+
     <form id="widget-form" action="{{ action_url }}" method="POST" novalidate{% if form.is_multipart %}
           enctype="multipart/form-data"{% endif %} data-edit-form>
         {% csrf_token %}
+
+        {{ form.initial|json_script:"initial-data" }}
+
         <div style="display: none">
             {{ panel.render_form_content }}
         </div>
@@ -70,10 +75,35 @@
         {% endif %}
     </script>
     <script>
-
-        const datasetsListUrl = "{% url 'dataset-list' %}";
-
         const elementId = "map-widget-editor-container"
+        const datasetsListUrl = "{% url 'datasets-list' %}";
+
+        const fields = [
+            'title',
+            'description',
+            'caption',
+            'dataset',
+            'layer',
+            'has_time',
+            'time',
+            'labels',
+            'basemap',
+            'show_boundaries'
+        ]
+
+
+        const requiredFields = ['title', 'description', 'dataset', 'layer',]
+        const validateWidgetData = (widgetData) => {
+            const missingFields = requiredFields.filter(f => !widgetData[f])
+
+            if (missingFields.length) {
+                return false
+            }
+
+            return !(widgetData.has_time && !widgetData.time);
+        }
+
+
         $(document).ready(() => {
 
                 // hide minimap
@@ -92,19 +122,71 @@
                             return !d.isBoundary && d.layers && !!d.layers.length
                         }))
                     },
+                    onWidgetUpdated: (widgetData) => {
+                        const isValid = validateWidgetData(widgetData)
+                        submitButtons.prop('disabled', !isValid)
+
+                        const {layer_type} = widgetData
+
+                        switch (layer_type) {
+                            case 'raster_file':
+                                widgetData.raster_file_layer = widgetData.layer
+                                break
+                            case 'raster_tile':
+                                widgetData.raster_tile_layer = widgetData.layer
+                                break
+                            case 'vector_file':
+                                widgetData.vector_file_layer = widgetData.layer
+                                break
+                            case 'vector_tile':
+                                widgetData.vector_tile_layer = widgetData.layer
+                                break
+                            case 'wms':
+                                widgetData.wms_layer = widgetData.layer
+                                break
+                            default:
+                                break
+                        }
+                        Object.keys(widgetData).forEach(key => {
+                            const input_selector = "[name='" + key + "']"
+                            const input = $(input_selector)
+                            if (input.length) {
+                                if (input.is(":checkbox")) {
+                                    if (widgetData[key] === true || widgetData[key] === 'true') {
+                                        input.prop('checked', true)
+                                    } else {
+                                        input.prop('checked', false)
+                                    }
+                                } else {
+                                    input.val(widgetData[key])
+                                }
+                            }
+                        })
+                    }
                 }
 
-                const initialData = {
-                    title: "Sample Title",
-                    description: "Sample Description",
-                    dataset: "e8a57470-bdc5-43a6-8dd2-d63426436337",
-                    layer: "b37516f3-01ac-49f3-a5db-3b44b9491c51"
+                const initialDataEl = document.getElementById('initial-data')
+                let initialData = {}
+                if (initialDataEl) {
+                    try {
+                        const data = JSON.parse(initialDataEl.textContent);
+
+                        initialData = fields.reduce((acc, field) => {
+                            if (data[field]) {
+                                acc[field] = data[field]
+                            }
+                            return acc
+                        }, {})
+
+
+                    } catch (e) {
+                        console.error('Error parsing initial data', e)
+                    }
                 }
+
 
                 // initialize editor
                 WidgetEditor.initializeMapWidgetEditor(elementId, editorConfig, initialData)
-
-
             }
         )
     </script>

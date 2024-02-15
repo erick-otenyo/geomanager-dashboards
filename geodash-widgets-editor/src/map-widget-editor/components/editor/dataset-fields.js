@@ -3,7 +3,7 @@ import {Form, Select} from 'antd';
 
 import DateSelector from "components/date-selector";
 
-import {useMapWidget} from "app/mapWidget";
+import {useMapWidget} from "providers/mapWidget";
 
 const onFinish = (values) => {
     console.log('Success:', values);
@@ -13,10 +13,8 @@ const onFinishFailed = (errorInfo) => {
 };
 
 const DatasetFields = () => {
-    const [hasTime, setHasTime] = useState(false);
     const [timeLoading, setTimeLoading] = useState(false);
     const [timestamps, setTimestamps] = useState([]);
-
 
     const {
         datasets,
@@ -43,27 +41,32 @@ const DatasetFields = () => {
     const [form] = Form.useForm();
 
     const onChange = (changedValues, allValues) => {
+
+
         updateWidgetConfig(changedValues);
 
         if (changedValues.dataset) {
-            const layers = datasets.find(d => d.id === changedValues.dataset)?.layers || [];
+            const dataset = datasets.find(d => d.id === changedValues.dataset);
 
+            // update the layer type
+            updateWidgetConfig({layer_type: dataset.layer_type});
+
+            const layers = dataset.layers || [];
             if (layers.length > 1) {
                 form.setFieldsValue({layer: null})
                 updateWidgetConfig({layer: null});
             } else {
                 form.setFieldsValue({layer: layers[0].id})
-                updateWidgetConfig({layer: layers[0].id});
+                const layer = layers[0];
+                updateWidgetConfig({layer: layer.id, layer_type: layer.layerType});
             }
         }
+
+
     }
 
-    const onTimeChange = (time) => {
-        onChange({time});
-    }
 
-
-    const {dataset, layer, time} = widgetConfig;
+    const {dataset, layer, time, has_time} = widgetConfig;
 
     const initialValues = {
         dataset,
@@ -89,7 +92,8 @@ const DatasetFields = () => {
             const {layerType, tileJsonUrl} = selectedLayerObject;
 
             if (layerType === "raster_file") {
-                setHasTime(true);
+                onChange({has_time: true});
+
                 setTimeLoading(true);
 
                 fetch(tileJsonUrl).then(response => response.json()).then(data => {
@@ -105,13 +109,12 @@ const DatasetFields = () => {
                     setTimestamps([]);
                 });
             } else {
-                setHasTime(false);
+                onChange({has_time: false});
                 setTimestamps([]);
             }
         }
 
     }, [layer])
-
 
     return (
         <Form
@@ -171,7 +174,7 @@ const DatasetFields = () => {
                 </Form.Item>
             )}
 
-            {hasTime && timestamps && !!timestamps.length && (
+            {has_time && timestamps && !!timestamps.length && (
                 <Form.Item
                     label={<label style={{color: "#fff"}}>Time</label>}
                     name="time"
@@ -182,11 +185,9 @@ const DatasetFields = () => {
                         },
                     ]}
                 >
-                    <DateSelector timestamps={timestamps} onChange={onTimeChange} selectedTime={timestamps[0]}/>
+                    <DateSelector timestamps={timestamps}/>
                 </Form.Item>
             )}
-
-
         </Form>
     );
 }

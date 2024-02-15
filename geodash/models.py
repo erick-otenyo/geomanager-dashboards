@@ -1,3 +1,5 @@
+import json
+
 from django.db import models
 from geomanager.models import Dataset, RasterFileLayer, RasterTileLayer, VectorFileLayer, VectorTileLayer, WmsLayer
 from wagtail.models import DraftStateMixin, LockableMixin, RevisionMixin, PreviewableMixin
@@ -11,6 +13,9 @@ class BaseWidget(DraftStateMixin, LockableMixin, RevisionMixin, PreviewableMixin
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return self.title
 
 
 class MapWidget(BaseWidget):
@@ -46,8 +51,33 @@ class MapWidget(BaseWidget):
         else:
             return None
 
+    @property
+    def initial_data(self):
+
+        data = {
+            "title": self.title,
+            "description": self.description,
+            "caption": self.caption,
+            "dataset": str(self.dataset.id),
+            "layer": str(self.layer.id),
+            "basemap": self.basemap,
+            "labels": self.labels,
+            "show_boundaries": self.show_boundaries,
+            "has_time": self.has_time,
+        }
+
+
+
+        if self.has_time:
+            data["time"] = self.time.isoformat()
+
+        return json.dumps(data)
+
 
 class MapChartWidget(BaseWidget):
     dataset = models.ForeignKey(Dataset, on_delete=models.CASCADE)
     configuration = models.JSONField(blank=True, null=True)
     raster_file_layer = models.ForeignKey(RasterFileLayer, on_delete=models.CASCADE, blank=True, null=True)
+
+    def __str__(self):
+        return self.title

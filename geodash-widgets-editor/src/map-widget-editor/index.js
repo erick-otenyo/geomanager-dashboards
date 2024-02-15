@@ -11,8 +11,8 @@ import {
     MAPSTYLES,
     VIEWPORT
 } from './map-config';
-import {MapWidgetProvider} from "app/mapWidget";
-import {ConfigProvider} from "app/config";
+import {MapWidgetProvider} from "providers/mapWidget";
+import {ConfigProvider} from "providers/config";
 
 
 const {Content, Sider} = Layout;

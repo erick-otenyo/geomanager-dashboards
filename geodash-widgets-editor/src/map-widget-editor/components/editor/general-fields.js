@@ -1,7 +1,7 @@
 import React from 'react';
 import {Form, Input} from 'antd';
 
-import {useMapWidget} from "app/mapWidget"
+import {useMapWidget} from "providers/mapWidget"
 
 const onFinish = (values) => {
     console.log('Success:', values);
