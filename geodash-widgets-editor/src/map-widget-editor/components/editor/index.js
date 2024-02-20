@@ -70,7 +70,11 @@ const Sidebar = () => {
 
     return (
         <div style={{width: "100%", paddingBottom: 50}}>
-            <Collapse accordion bordered={false} expandIconPosition="end" items={items} defaultActiveKey={['general']}/>
+            <Collapse
+                bordered={false}
+                expandIconPosition="end"
+                items={items}
+                defaultActiveKey="general"/>
         </div>
     );
 }

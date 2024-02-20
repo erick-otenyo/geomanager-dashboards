@@ -14,7 +14,7 @@ class MapWidgetViewSet(SnippetViewSet):
     icon = "map"
     menu_label = "Map Widgets"
     menu_order = 900
-    add_to_admin_menu = True
+    add_to_admin_menu = False
 
     @cached_property
     def menu_hook(self):
@@ -27,7 +27,7 @@ class MapChartWidgetViewSet(SnippetViewSet):
     icon = "chart"
     menu_label = "Map Chart Widgets"
     menu_order = 900
-    add_to_admin_menu = True
+    add_to_admin_menu = False
 
     @cached_property
     def menu_hook(self):

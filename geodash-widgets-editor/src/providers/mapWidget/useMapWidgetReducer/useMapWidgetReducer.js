@@ -2,6 +2,7 @@ import {useMemo, useReducer} from 'utils';
 import reducer from './reducer';
 
 import {exposedActions} from './actions';
+import {DEFAULT_MAP_STYLE} from "map-config";
 
 const INITIAL_STATE = {
     "datasets": [],
@@ -19,7 +20,14 @@ const INITIAL_STATE = {
         "show_boundary": true,
         "has_time": false,
         "time": null,
+        "lat": 0,
+        "lng": 0,
+        "zoom": 2,
+        "bounds": null,
     },
+    "mapConfig": {
+        "mapStyle": DEFAULT_MAP_STYLE,
+    }
 };
 
 function useMapWidgetReducer(partial) {

@@ -13,6 +13,8 @@ urlpatterns = [
     path('auth/', include('allauth.urls')),
 
     path("", include("geomanager.urls")),
+
+    path("", include("geodash.urls")),
 ]
 
 if settings.DEBUG:

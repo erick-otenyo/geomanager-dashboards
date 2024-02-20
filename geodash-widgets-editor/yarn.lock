@@ -2273,6 +2273,11 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
+iso8601-duration@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/iso8601-duration/-/iso8601-duration-2.1.2.tgz#b13f14068fe5890c91b91e1f74e474a49f355028"
+  integrity sha512-yXteYUiKv6x8seaDzyBwnZtPpmx766KfvQuaVNyPifYOjmPdOo3ajd4phDNa7Y5mTQGnXsNEcXFtVun1FjYXxQ==
+
 isobject@^3.0.1:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
@@ -3791,10 +3796,20 @@ wildcard@^2.0.0:
   resolved "https://registry.yarnpkg.com/wildcard/-/wildcard-2.0.1.tgz#5ab10d02487198954836b6349f74fff961e10f67"
   integrity sha512-CC1bOL87PIWSBhDcTrdeLo6eGT7mCFtrg0uIJtqJUFyK+eJnzl8A1niH56uu7KMa5XFrtiV+AQuHO3n7DsHnLQ==
 
+wms-capabilities@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/wms-capabilities/-/wms-capabilities-0.6.0.tgz#2c08744aacf501351e2b53029a5537da5321bc76"
+  integrity sha512-yTbtesuSyKkHhw1TUX4VklXEkbQByc+hyo7TWq1sGjBA6tQ+XN32w546TPDTzROuwFTE/Dcq5F5FN4aA9nesaQ==
+
 wri-json-api-serializer@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/wri-json-api-serializer/-/wri-json-api-serializer-1.0.1.tgz#49d26541d7fb5b10f9cc096f8f085395fa04e8a7"
   integrity sha512-yhu69MyIeKtKKztIzxwWQ87OLWsZ+oz8/vtMs2etPu2GZr2ZrT2S6YDiI4CjAtS9gs3iwQqygnbw6WdGXWmpPw==
+
+xmldom@^0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/xmldom/-/xmldom-0.6.0.tgz#43a96ecb8beece991cef382c08397d82d4d0c46f"
+  integrity sha512-iAcin401y58LckRZ0TkI4k0VSM1Qg0KGSc3i8rU+xrxe19A/BN1zHyVSJY7uoutVlaTSzYyk/v5AmkewAP7jtg==
 
 yallist@^3.0.2:
   version "3.1.1"

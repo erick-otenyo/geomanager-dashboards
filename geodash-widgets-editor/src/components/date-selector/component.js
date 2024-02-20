@@ -1,27 +1,31 @@
 import React, {useEffect, useRef} from 'react';
 import AirDateTimeselector from "./air-dateselector";
-import {format} from "date-fns";
 
 import "./air-dateselector.css";
 
-export default function DateTimeSelector({timestamps, onChange, value}) {
+export default function DateTimeSelector({timestamps, onChange, value, dateFormat}) {
+
     const selectorContainer = useRef(null);
     const selector = useRef(null);
 
+
     const onTimeChange = (time) => {
-        const formattedTime = format(time, "yyyy-MM-dd HH:mm");
+        const formattedTime = time.toISOString();
         onChange(formattedTime);
     }
 
     useEffect(() => {
-        if (selector.current) return; // initialize map only once
+        if (selector.current) return;
+
 
         const options = {
             includeDates: timestamps,
+            selectedDate: value,
             onSelect: onTimeChange,
             position: "top left",
-            selectedDate: value,
-        }
+            dateFormat
+        };
+
         selector.current = new AirDateTimeselector(selectorContainer.current, options);
     });
 

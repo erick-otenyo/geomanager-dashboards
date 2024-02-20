@@ -10,6 +10,10 @@
     <form action="{{ action_url }}" method="POST" novalidate{% if form.is_multipart %}
           enctype="multipart/form-data"{% endif %} data-edit-form>
         {% csrf_token %}
+
+        {{ form.errors|json_script:"errors" }}
+
+
         <div style="display: none">
             {{ panel.render_form_content }}
         </div>
@@ -70,7 +74,9 @@
         const initialData = {{ object.initial_data|safe }};
 
         const fields = ['title', 'description', 'caption', 'dataset', 'layer', 'has_time', 'time', 'labels', 'basemap', 'show_boundaries']
-        const requiredFields = ['title', 'description', 'dataset', 'layer']
+
+        const requiredFields = ['title', 'dataset', 'layer']
+
         const validateWidgetData = (widgetData) => {
             const missingFields = requiredFields.filter(f => !widgetData[f])
 
@@ -88,7 +94,7 @@
                 $('[data-minimap-container]').hide()
 
                 // disable submit buttons by default
-                const submitButtons = $('#submit-actions button')
+                const submitButtons = $('.actions button')
                 submitButtons.prop('disabled', true)
 
 
@@ -102,9 +108,6 @@
                     },
                     onWidgetUpdated: (widgetData) => {
                         const isValid = validateWidgetData(widgetData)
-
-                        console.log(isValid)
-
 
                         submitButtons.prop('disabled', !isValid)
 
@@ -141,13 +144,13 @@
                                         input.prop('checked', false)
                                     }
                                 } else {
+
                                     input.val(widgetData[key])
                                 }
                             }
                         })
                     }
                 }
-
                 // initialize editor
                 WidgetEditor.initializeMapWidgetEditor(elementId, editorConfig, initialData)
             }

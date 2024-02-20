@@ -3,13 +3,6 @@ import {Checkbox, Form, Select} from 'antd';
 
 import {useMapWidget} from "providers/mapWidget";
 
-const onFinish = (values) => {
-    console.log('Success:', values);
-};
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-};
-
 const BasemapFields = () => {
     const {
         widgetConfig,
@@ -46,8 +39,6 @@ const BasemapFields = () => {
             theme="dark"
             layout="vertical"
             name="basemap"
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
             initialValues={initialValues}
             onValuesChange={onChange}

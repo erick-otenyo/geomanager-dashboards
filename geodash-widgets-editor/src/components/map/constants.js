@@ -53,15 +53,6 @@ const BASEMAPS = {
                 '<a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>',
         },
     },
-    terrain: {
-        id: 'terrain',
-        value: 'terrain',
-        label: 'Terrain',
-        options: {
-            attribution:
-                '<a href="https://www.mapbox.com/about/maps/" target="_blank">© Mapbox</a> <a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>',
-        },
-    },
 };
 
 const DEFAULT_VIEWPORT = {

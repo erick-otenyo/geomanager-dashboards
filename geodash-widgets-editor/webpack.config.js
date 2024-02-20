@@ -9,6 +9,7 @@ module.exports = function (env, argv) {
         mode: options.mode,
         entry: {
             "map-widget-editor": path.resolve(__dirname, "./src/map-widget-editor/index.js"),
+            "map-widget-renderer": path.resolve(__dirname, "./src/map-widget-renderer/index.js"),
         },
         resolve: {
             extensions: [".js", ".css", ".scss", ".svg"],

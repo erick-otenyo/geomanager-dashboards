@@ -29,6 +29,7 @@
     "axios": "^1.6.7",
     "classnames": "^2.5.1",
     "date-fns": "^3.3.1",
+    "iso8601-duration": "^2.1.2",
     "lodash": "^4.17.21",
     "maplibre-gl": "2.4.0",
     "react": "^18.2.0",
@@ -40,6 +41,8 @@
     "shallow-equal": "^3.1.0",
     "use-context-selector": "^1.4.1",
     "viewport-mercator-project": "^7.0.4",
-    "vizzuality-components": "^3.0.3"
+    "vizzuality-components": "^3.0.3",
+    "wms-capabilities": "^0.6.0",
+    "xmldom": "^0.6.0"
   }
 }

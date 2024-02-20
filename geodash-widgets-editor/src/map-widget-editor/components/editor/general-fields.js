@@ -3,13 +3,6 @@ import {Form, Input} from 'antd';
 
 import {useMapWidget} from "providers/mapWidget"
 
-const onFinish = (values) => {
-    console.log('Success:', values);
-};
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-};
-
 
 const GeneralFields = () => {
     const {
@@ -50,8 +43,6 @@ const GeneralFields = () => {
             initialValues={initialValues || {}}
             layout="vertical"
             name="general"
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
             onValuesChange={onChange}
         >

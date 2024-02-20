@@ -1,15 +1,16 @@
-import React, {PureComponent, createRef} from "react";
+import React, {createRef, PureComponent} from "react";
 import PropTypes from "prop-types";
 import ReactMapGL, {FlyToInterpolator} from "react-map-gl";
 import WebMercatorViewport from "viewport-mercator-project";
 import isEqual from "lodash/isEqual";
 import isEmpty from "lodash/isEmpty";
 
-import {
-    Legend,
-    LegendListItem,
-    LegendItemTypes,
-} from 'vizzuality-components';
+import {updateLayerUrlParams} from "./utils";
+import {parseISO} from "date-fns";
+
+import {Legend, LegendListItem,} from 'vizzuality-components';
+
+import LegendItemTypes from "./legend/legend-item-types";
 
 import LayerManager from "./layer-manager";
 
@@ -42,8 +43,6 @@ class Map extends PureComponent {
             viewport: PropTypes.shape({}),
             MAPSTYLES: PropTypes.object,
             VIEWPORT: PropTypes.object,
-            providers: PropTypes.object,
-            mapboxToken: PropTypes.string,
         }),
 
         mapConfiguration: PropTypes.shape({
@@ -144,7 +143,6 @@ class Map extends PureComponent {
 
     componentDidMount() {
         const {map} = this.props;
-
         this.setState({
             viewport: {
                 ...DEFAULT_VIEWPORT,
@@ -158,9 +156,11 @@ class Map extends PureComponent {
             viewport: prevViewport,
             layerId: prevLayerId,
             mapConfiguration: prevMapConfiguration,
+            hasTime: prevHasTime,
+            time: prevTime,
         } = prevProps;
 
-        const {viewport, layerId, mapConfiguration} = this.props;
+        const {viewport, layerId, mapConfiguration, hasTime, time} = this.props;
 
         const {viewport: stateViewport} = this.state;
         const basemapChanged = !isEqual(
@@ -175,7 +175,8 @@ class Map extends PureComponent {
             mapConfiguration.basemap.boundaries,
             prevMapConfiguration.basemap.boundaries
         );
-        const layerChanged = !isEqual(layerId, prevLayerId) && this.map;
+
+        const layerChanged = this.map && (!isEqual(layerId, prevLayerId) || !isEqual(hasTime, prevHasTime) || !isEqual(time, prevTime));
 
         if (!isEqual(viewport, prevViewport)) {
             this.setState({
@@ -190,6 +191,7 @@ class Map extends PureComponent {
         if (basemapChanged && this.map) this.setBasemap();
         if (labelsChanged && this.map) this.setLabels();
         if (boundariesChanged && this.map) this.setBoundaries();
+
         if (layerChanged && this.map) this.setLayers();
     }
 
@@ -224,9 +226,6 @@ class Map extends PureComponent {
                     lat: latitude,
                     lng: longitude,
                     zoom,
-                    basemap,
-                    bounds: bounds,
-                    bbox: bounds,
                 });
             }
         });
@@ -248,6 +247,8 @@ class Map extends PureComponent {
         const {basemap} = this.props.mapConfiguration.basemap;
         const BASEMAP_GROUPS = ["basemap"];
         const {layers, metadata} = this.map.getStyle();
+
+        if (!metadata) return;
 
         const basemapGroups = Object.keys(metadata["mapbox:groups"]).filter((k) => {
             const {name} = metadata["mapbox:groups"][k];
@@ -292,6 +293,8 @@ class Map extends PureComponent {
         const LABELS_GROUP = ["labels"];
         const {layers, metadata} = this.map.getStyle();
 
+        if (!metadata) return;
+
         const labelGroups = Object.keys(metadata["mapbox:groups"]).filter((k) => {
             const {name} = metadata["mapbox:groups"][k];
 
@@ -330,14 +333,30 @@ class Map extends PureComponent {
     };
 
     setLayers() {
-        const {layers, layerId} = this.props;
+
+        const {layers, layerId, hasTime, time} = this.props;
+
+        if (!layers || !layers.length) return;
+
+        let activeLayers = layers.filter((l) => l.id === layerId);
+
+        if (hasTime && time) {
+            activeLayers = activeLayers.reduce((all, layer) => {
+
+                updateLayerUrlParams(layer, {time: parseISO(time).toISOString()});
+                all.push(layer)
+
+                return all;
+            }, []);
+        }
 
 
-        const activeLayers = layers.filter((l) => l.id === layerId);
         this.setState({
             layers: activeLayers,
             layerGroups: this.createLayerGroups(activeLayers, layerId)
         });
+
+
     }
 
     setBoundaries = () => {
@@ -345,6 +364,8 @@ class Map extends PureComponent {
 
         const LABELS_GROUP = ["boundaries"];
         const {layers, metadata} = this.map.getStyle();
+
+        if (!metadata) return;
 
         const boundariesGroups = Object.keys(metadata["mapbox:groups"]).filter(
             (k) => {
@@ -439,6 +460,8 @@ class Map extends PureComponent {
         if (!layers?.length) {
             return [];
         }
+
+
         return layers.map(({id, dataset, ...rest}) => ({
             dataset,
             visible: true,
@@ -473,7 +496,6 @@ class Map extends PureComponent {
 
         const {viewport, flying, loaded, layers, layerGroups} = this.state;
 
-
         return (
             <div className="c-mapbox-map" ref={this.mapContainer}>
                 <div className="c-legend">
@@ -481,7 +503,7 @@ class Map extends PureComponent {
                         {layerGroups.map((lg, i) => (
                             <LegendListItem
                                 index={i}
-                                key={lg.id}
+                                key={`${i}-${lg.dataset}`}
                                 layerGroup={lg}
                             >
                                 <LegendItemTypes/>
@@ -493,7 +515,6 @@ class Map extends PureComponent {
                     ref={(_map) => {
                         if (_map) this.map = _map.getMap();
                     }}
-                    mapboxApiAccessToken={map.mapboxToken}
                     mapStyle={map.MAPSTYLES}
                     // CUSTOM PROPS FROM REACT MAPBOX API
                     {...mapboxProps}

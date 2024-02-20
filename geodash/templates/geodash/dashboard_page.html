@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+    <script src="{% static 'geodash/js/widget-editor/map-widget-renderer.js' %}"></script>
+    <script type="module">
+        import {Application, Controller} from "{% static 'geodash/js/vendor/stimulus.js' %}"
+
+        window.Stimulus = Application.start()
+
+        Stimulus.register("widget", class extends Controller {
+            static targets = ["name"]
+
+            connect() {
+                this.loadWidget()
+            }
+
+            loadWidget() {
+                const dataUrl = this.data.get("dataUrl")
+
+                this.element.innerHTML = "Loading..."
+
+                if (dataUrl) {
+                    fetch(dataUrl)
+                        .then(response => response.json())
+                        .then(data => {
+                            WidgetEditor.initializeMapWidgetRenderer(this.element, data)
+                        }).catch(error => {
+                        this.element.innerHTML = "Error loading widget data"
+                    })
+                }
+
+            }
+        })
+    </script>
+{% endblock %}
+
+
+{% block content %}
+    <main>
+        <div class="container">
+
+            <h1 class="title is-1">{{ page.title }}</h1>
+            <div>
+                {{ page.introduction }}
+            </div>
+
+
+            <div>
+                {{ page.body }}
+            </div>
+
+
+        </div>
+    </main>
+
+{% endblock %}

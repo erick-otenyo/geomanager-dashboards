@@ -5,12 +5,8 @@ import DateSelector from "components/date-selector";
 
 import {useMapWidget} from "providers/mapWidget";
 
-const onFinish = (values) => {
-    console.log('Success:', values);
-};
-const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
-};
+import {wmsGetLayerTimeFromCapabilities} from "components/map/utils";
+
 
 const DatasetFields = () => {
     const [timeLoading, setTimeLoading] = useState(false);
@@ -42,27 +38,20 @@ const DatasetFields = () => {
 
     const onChange = (changedValues, allValues) => {
 
-
         updateWidgetConfig(changedValues);
 
         if (changedValues.dataset) {
             const dataset = datasets.find(d => d.id === changedValues.dataset);
 
-            // update the layer type
-            updateWidgetConfig({layer_type: dataset.layer_type});
+            // update state
+            updateWidgetConfig({layer_type: dataset.layer_type, layer: null, time: null, has_time: false});
 
-            const layers = dataset.layers || [];
-            if (layers.length > 1) {
-                form.setFieldsValue({layer: null})
-                updateWidgetConfig({layer: null});
-            } else {
-                form.setFieldsValue({layer: layers[0].id})
-                const layer = layers[0];
-                updateWidgetConfig({layer: layer.id, layer_type: layer.layerType});
-            }
+            // reset form
+            form.setFieldsValue({layer: null, time: null});
+
+            // clear timestamps
+            setTimestamps([]);
         }
-
-
     }
 
 
@@ -90,7 +79,6 @@ const DatasetFields = () => {
     useEffect(() => {
         if (selectedLayerObject) {
             const {layerType, tileJsonUrl} = selectedLayerObject;
-
             if (layerType === "raster_file") {
                 onChange({has_time: true});
 
@@ -108,6 +96,24 @@ const DatasetFields = () => {
                     setTimeLoading(false);
                     setTimestamps([]);
                 });
+            } else if (layerType === "wms") {
+                const {getCapabilitiesUrl, layerName} = selectedLayerObject;
+
+                setTimeLoading(true);
+
+                wmsGetLayerTimeFromCapabilities(getCapabilitiesUrl, layerName).then(timestamps => {
+                    if (timestamps.length) {
+                        setTimestamps(timestamps);
+                        onChange({has_time: true});
+                    } else {
+                        setTimestamps([]);
+                        onChange({has_time: false});
+                    }
+
+                    setTimeLoading(false);
+                })
+
+
             } else {
                 onChange({has_time: false});
                 setTimestamps([]);
@@ -116,14 +122,14 @@ const DatasetFields = () => {
 
     }, [layer])
 
+    const dateFormat = selectedLayerObject && selectedLayerObject?.paramsSelectorConfig.find(c => c.key === "time")?.dateFormat;
+
     return (
         <Form
             form={form}
             theme="dark"
             layout="vertical"
             name="dataset"
-            onFinish={onFinish}
-            onFinishFailed={onFinishFailed}
             autoComplete="off"
             initialValues={initialValues}
             onValuesChange={onChange}
@@ -185,7 +191,7 @@ const DatasetFields = () => {
                         },
                     ]}
                 >
-                    <DateSelector timestamps={timestamps}/>
+                    <DateSelector timestamps={timestamps} dateFormat={dateFormat}/>
                 </Form.Item>
             )}
         </Form>
